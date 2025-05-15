@@ -9,10 +9,19 @@ if [[ -z "$subreddit" ]]; then
 fi
 
 if [[ -z "$limit" ]]; then
-    limit=10  
+    limit=10
 fi
 
 access_token=$(cat access_token.txt)
+
+
+posts=$(curl -s -H "Authorization: Bearer $access_token" \
+     -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+     "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r '
+.data.children[] |
+    [.data.title, .data.author, .data.selftext] |
+    @tsv')
+
 
 # Color VARs
 TITLE_COLOR='\e[96m'
@@ -20,9 +29,10 @@ AUTHOR_COLOR='\e[93m'
 BODY_COLOR='\e[92m'
 RESET='\e[0m'
 
-curl -s -H "Authorization: Bearer $access_token" \
-     -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r --arg TITLE_COLOR "$TITLE_COLOR" --arg AUTHOR_COLOR "$AUTHOR_COLOR" --arg BODY_COLOR "$BODY_COLOR" --arg RESET "$RESET" '
-.data.children[] |
-  "\($TITLE_COLOR)🔸 \(.data.title)\($RESET)\n\($AUTHOR_COLOR)👤 Author: \(.data.author)\($RESET)\n\($BODY_COLOR)📝 \(.data.selftext)\($RESET)\n─────────────────────────────"
-'
+
+echo "$posts" | while IFS=$'\t' read -r title author selftext; do
+    echo -e "${TITLE_COLOR}🔸 $title${RESET}"
+    echo -e "${AUTHOR_COLOR}👤 Author: $author${RESET}"
+    echo -e "${BODY_COLOR}📝 $selftext${RESET}"
+    echo -e "─────────────────────────────"
+done
