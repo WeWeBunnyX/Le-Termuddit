@@ -1,14 +1,15 @@
 #!/bin/bash
 
-source config.sh
+# 1. Authenticate (will also fetch and store token if needed)
+bash authenticate.sh > /dev/null
 
-# 2. Get access token
-access_token=$(bash authenticate.sh | grep "Access Token" | awk '{print $3}')
+# 2. Load the access token from file
+access_token=$(cat access_token.txt)
 
-# 3. Debug token
-echo "Access Token: $access_token"
-
-# 4. Fetch posts and display relevant information
+# 3. Fetch posts
 curl -s -H "Authorization: Bearer $access_token" \
      -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/r/PakLounge/hot?limit=100" | jq -r '.data.children[] | "\(.data.title) \n \(.data.url) \n Author: \(.data.author)\n\(.data.selftext)\n"'
+     "https://oauth.reddit.com/r/PakLounge/hot?limit=1000" | jq -r '
+.data.children[] |
+  "🔸 \(.data.title)\n🌐 \(.data.url)\n👤 Author: \(.data.author)\n📝 \(.data.selftext)\n─────────────────────────────"
+'
