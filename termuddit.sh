@@ -15,7 +15,14 @@ function authenticate() {
     bash authenticate.sh
     sleep 1
     clear
-    bash get_posts.sh
+
+    echo -n "Enter a subreddit/community to view its posts (e.g., linux): r/"
+    read -r subreddit
+
+    echo -n "How many posts would you like to fetch? (e.g., 10, 25, 50): "
+    read -r post_limit
+
+    bash get_posts.sh "$subreddit" "$post_limit"
 }
 
 function usage_menu() {
