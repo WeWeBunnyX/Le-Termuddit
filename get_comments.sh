@@ -9,6 +9,7 @@ AUTHOR_COLOR='\e[93m'
 SCORE_COLOR='\e[94m'
 UPVOTE_COLOR='\e[92m' 
 DEPTH_COLOR='\e[90m'
+RED_COLOR='\e[91m'
 RESET='\e[0m'
 
 
@@ -30,20 +31,24 @@ print_comment() {
 
 comments=$(curl -s -H "Authorization: Bearer $access_token" \
      -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100" | \
+     "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
      jq -r '.[1].data.children[].data | 
-     select(.author != null and .body != null) |
+     select(.author != null and .body != null and .body != "[removed]" and .body != "[deleted]") |
      [.author, .body, .score, (.depth // 0)] | @tsv')
+
+# Display comment count
+total_comments=$(echo "$comments" | wc -l)
+echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
 
 # Display comments
 if [[ -z "$comments" ]]; then
     echo "No comments found for this post."
 else
-    echo -e "\n=== Comments ===\n"
     echo "$comments" | while IFS=$'\t' read -r author body score depth; do
         print_comment "$depth"
     done
 fi
+
 
 # Load more comments prompt
 echo -e "\nPress 'm' to load more comments or Enter to return: "
@@ -52,10 +57,13 @@ read -r more
 if [[ "$more" == "m" || "$more" == "M" ]]; then
     comments=$(curl -s -H "Authorization: Bearer $access_token" \
          -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-         "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
+         "https://oauth.reddit.com/comments/$post_id?depth=10&limit=500&sort=top" | \
          jq -r '.[1].data.children[].data | 
-         select(.author != null and .body != null) |
+         select(.author != null and .body != null and .body != "[removed]" and .body != "[deleted]") |
          [.author, .body, .score, (.depth // 0)] | @tsv')
+    
+    total_comments=$(echo "$comments" | wc -l)
+    echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
     
     echo "$comments" | while IFS=$'\t' read -r author body score depth; do
         print_comment "$depth"
