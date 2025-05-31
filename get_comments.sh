@@ -3,14 +3,13 @@
 post_id=$1
 access_token=$(cat access_token.txt)
 
-# Color definitions
+# Color VARs
 COMMENT_COLOR='\e[95m'
 AUTHOR_COLOR='\e[93m'
 SCORE_COLOR='\e[94m'
 DEPTH_COLOR='\e[90m'
 RESET='\e[0m'
 
-# Function to print comments with proper indentation
 print_comment() {
     local depth=$1
     local indent=$(printf "%*s" "$((depth*2))" "")
@@ -20,7 +19,6 @@ print_comment() {
     echo -e "${DEPTH_COLOR}$indent─────────────────────────────${RESET}"
 }
 
-# Fetch comments using Reddit API with depth and limit parameters
 comments=$(curl -s -H "Authorization: Bearer $access_token" \
      -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
      "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100" | \
@@ -38,7 +36,7 @@ else
     done
 fi
 
-# Ask if user wants to load more comments
+# Load more comments prompt
 echo -e "\nPress 'm' to load more comments or Enter to return: "
 read -r more
 
