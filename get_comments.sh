@@ -13,9 +13,40 @@ RED_COLOR='\e[91m'
 RESET='\e[0m'
 
 
+# JQ Query for handling comments and replies
+comments=$(curl -s -H "Authorization: Bearer $access_token" \
+     -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+     "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
+     jq -r '
+     def walk_comments:
+       if type == "object" then
+         if .kind == "t1" and .data then
+           (.data | select(.author != null and .body != null) |
+           select(.body != "[removed]" and .body != "[deleted]") |
+           [.author, .body, .score, (.depth // 0)] | @tsv),
+           (.data.replies?.data?.children[]? | walk_comments)
+         elif .data?.children then
+           (.data.children[] | walk_comments)
+         else empty
+         end
+       else empty
+       end;
+     .[] | walk_comments')
+
+#Total Available Comments
+total_comments=$(echo "$comments" | wc -l)
+echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
+
+
 print_comment() {
     local depth=$1
-    local indent=$(printf "%*s" "$((depth*2))" "")
+    local indent=$(printf "%*s" "$((depth*4))" "") 
+    local prefix=""
+    
+    # Indicate as Reply
+    if ((depth > 0)); then
+        prefix="${DEPTH_COLOR}└─${RESET}"
+    fi
     
     local score_display=""
     if ((score > 0)); then
@@ -24,21 +55,10 @@ print_comment() {
         score_display="${SCORE_COLOR}( ${score} )${RESET}"
     fi
     
-    echo -e "${DEPTH_COLOR}$indent${AUTHOR_COLOR}👤 $author ${score_display}${RESET}"
-    echo -e "${DEPTH_COLOR}$indent${COMMENT_COLOR}$body${RESET}"
-    echo -e "${DEPTH_COLOR}$indent─────────────────────────────${RESET}"
+    echo -e "${DEPTH_COLOR}$indent$prefix${AUTHOR_COLOR}👤 $author ${score_display}${RESET}"
+    echo -e "${DEPTH_COLOR}$indent   ${COMMENT_COLOR}$body${RESET}"
+    echo -e "${DEPTH_COLOR}$indent   ─────────────────────────────${RESET}"
 }
-
-comments=$(curl -s -H "Authorization: Bearer $access_token" \
-     -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
-     jq -r '.[1].data.children[].data | 
-     select(.author != null and .body != null and .body != "[removed]" and .body != "[deleted]") |
-     [.author, .body, .score, (.depth // 0)] | @tsv')
-
-# Display comment count
-total_comments=$(echo "$comments" | wc -l)
-echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
 
 # Display comments
 if [[ -z "$comments" ]]; then
@@ -50,7 +70,7 @@ else
 fi
 
 
-# Load more comments prompt
+
 echo -e "\nPress 'm' to load more comments or Enter to return: "
 read -r more
 
@@ -58,9 +78,21 @@ if [[ "$more" == "m" || "$more" == "M" ]]; then
     comments=$(curl -s -H "Authorization: Bearer $access_token" \
          -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
          "https://oauth.reddit.com/comments/$post_id?depth=10&limit=500&sort=top" | \
-         jq -r '.[1].data.children[].data | 
-         select(.author != null and .body != null and .body != "[removed]" and .body != "[deleted]") |
-         [.author, .body, .score, (.depth // 0)] | @tsv')
+         jq -r '
+         def walk_comments:
+           if type == "object" then
+             if .kind == "t1" and .data then
+               (.data | select(.author != null and .body != null) |
+               select(.body != "[removed]" and .body != "[deleted]") |
+               [.author, .body, .score, (.depth // 0)] | @tsv),
+               (.data.replies?.data?.children[]? | walk_comments)
+             elif .data?.children then
+               (.data.children[] | walk_comments)
+             else empty
+             end
+           else empty
+           end;
+         .[] | walk_comments')
     
     total_comments=$(echo "$comments" | wc -l)
     echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
