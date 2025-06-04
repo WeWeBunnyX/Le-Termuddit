@@ -14,17 +14,32 @@ fi
 
 access_token=$(cat access_token.txt)
 
-posts=$(curl -s -H "Authorization: Bearer $access_token" \
-     -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r '
-.data.children[] |
-    [.data.name[3:], 
-     .data.title, 
-     .data.author, 
-     .data.selftext, 
-     .data.num_comments,
-     (.data.url | select(contains(".jpg") or contains(".png") or contains(".gif")))] |
-    @tsv')
+# When --noimage flag
+if [[ "$NO_IMAGES" == "true" ]]; then
+    posts=$(curl -s -H "Authorization: Bearer $access_token" \
+         -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+         "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r '
+    .data.children[] |
+        [.data.name[3:], 
+         .data.title, 
+         .data.author, 
+         .data.selftext, 
+         .data.num_comments] |
+        @tsv')
+else
+    # when default with image support
+    posts=$(curl -s -H "Authorization: Bearer $access_token" \
+         -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+         "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r '
+    .data.children[] |
+        [.data.name[3:], 
+         .data.title, 
+         .data.author, 
+         .data.selftext, 
+         .data.num_comments,
+         (.data.url | select(contains(".jpg") or contains(".png") or contains(".gif")))] |
+        @tsv')
+fi
 
 # Color VARs
 TITLE_COLOR='\e[96m'
@@ -38,10 +53,9 @@ while IFS=$'\t' read -r id title author selftext num_comments image_url; do
     echo -e "${TITLE_COLOR}[$post_number] 🔸 $title${RESET}"
     echo -e "${AUTHOR_COLOR}👤 Author: $author${RESET}"
     
-    # Convert and display image as ASCII (if available)
-    if [[ -n "$image_url" ]]; then
+    # Display images if NO_IMAGES is false
+    if [[ "$NO_IMAGES" == "false" && -n "$image_url" ]]; then
         echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
-        # Download and Display Flags
         curl -s "$image_url" | chafa \
             --size=80x40 \
             --symbols=block+ascii+space-extra \
@@ -74,7 +88,7 @@ while true; do
         [0-9]*)
             if [[ -n "${post_ids[$selection]}" ]]; then
                 bash get_comments.sh "${post_ids[$selection]}"
-                # After viewing comments, redisplay posts
+                # Redisplay posts after viewing comments
                 clear
                 while IFS=$'\t' read -r id title author selftext num_comments image_url; do
                     echo -e "${TITLE_COLOR}[$post_number] 🔸 $title${RESET}"
@@ -83,7 +97,7 @@ while true; do
                     # Convert and display image as ASCII if available
                     if [[ -n "$image_url" ]]; then
                         echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
-                        # Download and display with enhanced settings
+                        # display img flags
                         curl -s "$image_url" | chafa \
                             --size=80x40 \
                             --symbols=block+ascii+space-extra \
@@ -121,7 +135,7 @@ while true; do
                 # Convert and display image as ASCII if available
                 if [[ -n "$image_url" ]]; then
                     echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
-                    # Download and Display Flags
+                    # display img flags
                     curl -s "$image_url" | chafa \
                         --size=80x40 \
                         --symbols=block+ascii+space-extra \

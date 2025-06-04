@@ -1,6 +1,21 @@
 #!/bin/bash
 
 CREDENTIALS_FILE="credentials.txt"
+export NO_IMAGES=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --noimg)
+            export NO_IMAGES=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: ./termuddit.sh [--noimg]"
+            exit 1
+            ;;
+    esac
+done
 
 function input_credentials() {
     echo "Enter Client ID:"

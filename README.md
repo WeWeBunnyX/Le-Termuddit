@@ -145,7 +145,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - [JQ Manual](https://stedolan.github.io/jq/manual/)
 - [Bash Documentation](https://www.gnu.org/software/bash/manual/)
 - [Chafa Documentation](https://hpjansson.org/chafa/)
-- [Figlet Documentation](http://www.figlet.org/figlet-documentation.html)
+- [Figlet Documentation](http://www.figlet.org/)
 
 ## Author
 
