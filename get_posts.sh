@@ -18,7 +18,12 @@ posts=$(curl -s -H "Authorization: Bearer $access_token" \
      -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
      "https://oauth.reddit.com/r/$subreddit/hot?limit=$limit" | jq -r '
 .data.children[] |
-    [.data.name[3:], .data.title, .data.author, .data.selftext, .data.num_comments] |
+    [.data.name[3:], 
+     .data.title, 
+     .data.author, 
+     .data.selftext, 
+     .data.num_comments,
+     (.data.url | select(contains(".jpg") or contains(".png") or contains(".gif")))] |
     @tsv')
 
 # Color VARs
@@ -29,9 +34,23 @@ COMMENT_INFO_COLOR='\e[94m'
 RESET='\e[0m'
 
 post_number=1
-while IFS=$'\t' read -r id title author selftext num_comments; do
+while IFS=$'\t' read -r id title author selftext num_comments image_url; do
     echo -e "${TITLE_COLOR}[$post_number] 🔸 $title${RESET}"
     echo -e "${AUTHOR_COLOR}👤 Author: $author${RESET}"
+    
+    # Convert and display image as ASCII (if available)
+    if [[ -n "$image_url" ]]; then
+        echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
+        # Download and Display Flags
+        curl -s "$image_url" | chafa \
+            --size=80x40 \
+            --symbols=block+ascii+space-extra \
+            --color-space=rgb \
+            --dither=diffusion \
+            --dither-intensity=1.0 \
+            --color-extractor=average
+    fi
+    
     echo -e "${BODY_COLOR}📝 $selftext${RESET}"
     echo -e "${COMMENT_INFO_COLOR}💬 Comments: $num_comments${RESET}"
     echo -e "─────────────────────────────"
@@ -57,9 +76,23 @@ while true; do
                 bash get_comments.sh "${post_ids[$selection]}"
                 # After viewing comments, redisplay posts
                 clear
-                while IFS=$'\t' read -r id title author selftext num_comments; do
+                while IFS=$'\t' read -r id title author selftext num_comments image_url; do
                     echo -e "${TITLE_COLOR}[$post_number] 🔸 $title${RESET}"
                     echo -e "${AUTHOR_COLOR}👤 Author: $author${RESET}"
+                    
+                    # Convert and display image as ASCII if available
+                    if [[ -n "$image_url" ]]; then
+                        echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
+                        # Download and display with enhanced settings
+                        curl -s "$image_url" | chafa \
+                            --size=80x40 \
+                            --symbols=block+ascii+space-extra \
+                            --color-space=rgb \
+                            --dither=diffusion \
+                            --dither-intensity=1.0 \
+                            --color-extractor=average
+                    fi
+                    
                     echo -e "${BODY_COLOR}📝 $selftext${RESET}"
                     echo -e "${COMMENT_INFO_COLOR}💬 Comments: $num_comments${RESET}"
                     echo -e "─────────────────────────────"
@@ -81,9 +114,23 @@ while true; do
                 @tsv')
             # Reset post counter and redisplay
             post_number=1
-            while IFS=$'\t' read -r id title author selftext num_comments; do
+            while IFS=$'\t' read -r id title author selftext num_comments image_url; do
                 echo -e "${TITLE_COLOR}[$post_number] 🔸 $title${RESET}"
                 echo -e "${AUTHOR_COLOR}👤 Author: $author${RESET}"
+                
+                # Convert and display image as ASCII if available
+                if [[ -n "$image_url" ]]; then
+                    echo -e "${BODY_COLOR}🖼️  Image:${RESET}"
+                    # Download and Display Flags
+                    curl -s "$image_url" | chafa \
+                        --size=80x40 \
+                        --symbols=block+ascii+space-extra \
+                        --color-space=rgb \
+                        --dither=diffusion \
+                        --dither-intensity=1.0 \
+                        --color-extractor=average
+                fi
+                
                 echo -e "${BODY_COLOR}📝 $selftext${RESET}"
                 echo -e "${COMMENT_INFO_COLOR}💬 Comments: $num_comments${RESET}"
                 echo -e "─────────────────────────────"
