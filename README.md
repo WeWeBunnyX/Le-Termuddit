@@ -132,21 +132,20 @@ termuddit/
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+Contributions are welcome, you may open a pull request or submit an issue.
 
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## Acknowledgments/References
 
-- Reddit API Documentation
-- JQ Manual
-- Bash Documentation
+- [Reddit API Documentation](https://www.reddit.com/dev/api/)
+- [Reddit OAuth2 Guide](https://github.com/reddit-archive/reddit/wiki/OAuth2)
+- [JQ Manual](https://stedolan.github.io/jq/manual/)
+- [Bash Documentation](https://www.gnu.org/software/bash/manual/)
+- [Chafa Documentation](https://hpjansson.org/chafa/)
+- [Figlet Documentation](http://www.figlet.org/figlet-documentation.html)
 
 ## Author
 
@@ -156,6 +155,3 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 If you found this project helpful, please give it a ⭐️!
 
-## Contributing
-
-Contributions are welcome, you may open a pull request or submit an issue.
