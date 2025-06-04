@@ -8,6 +8,7 @@ A command-line interface Reddit client written in Bash that lets you browse Redd
 
 - 🎨 Colorful and clean terminal interface
 - 👀 Browse subreddits and view posts
+- 🖼️ View images as ASCII art in terminal
 - 💬 View nested comments with proper threading
 - 🔄 Refresh posts and comments
 - 🎯 Load more comments on demand
@@ -20,13 +21,14 @@ A command-line interface Reddit client written in Bash that lets you browse Redd
 - `curl`
 - `jq` (JSON processor)
 - `figlet` (for splash screen)
+- `chafa` (for ASCII art images)
 - Reddit API credentials
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/termuddit.git
+git clone https://github.com/WeWeBunnyX/termuddit.git
 cd termuddit
 ```
 
@@ -35,10 +37,35 @@ cd termuddit
 chmod +x *.sh
 ```
 
-3. Install dependencies (Ubuntu/Debian):
+3. Install dependencies:
+
+### Ubuntu/Debian
 ```bash
-sudo apt install jq curl figlet
+sudo apt install jq curl figlet chafa
 ```
+
+### Fedora/RHEL
+```bash
+sudo dnf install jq curl figlet chafa
+```
+
+### Arch Linux
+```bash
+sudo pacman -S jq curl figlet chafa
+```
+
+### macOS (using Homebrew)
+```bash
+brew install jq curl figlet chafa
+```
+
+### Using Package Manager Alternatives
+| Distribution | Package Manager | Command |
+|-------------|----------------|---------|
+| OpenSUSE    | zypper         | `sudo zypper install jq curl figlet chafa` |
+| Alpine      | apk            | `sudo apk add jq curl figlet chafa` |
+| Gentoo      | emerge         | `sudo emerge jq curl figlet chafa` |
+| Void Linux  | xbps           | `sudo xbps-install -S jq curl figlet chafa` |
 
 ## Setup
 
@@ -78,6 +105,13 @@ sudo apt install jq curl figlet
 - `m` - Load more comments
 - `r` - Refresh current comments
 - `q` - Return to posts view
+
+### Image Display
+
+Images in posts are automatically converted to ASCII art using `chafa`. The quality depends on:
+- Terminal color support (256 colors recommended)
+- Terminal font (Unicode support required)
+- Terminal window size
 
 ## Project Structure
 
@@ -124,4 +158,4 @@ If you found this project helpful, please give it a ⭐️!
 
 ## Contributing
 
-Contributions are welcome, you may open a pull request or submit an issue. 
+Contributions are welcome, you may open a pull request or submit an issue.
