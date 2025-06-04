@@ -60,44 +60,76 @@ print_comment() {
     echo -e "${DEPTH_COLOR}$indent   ─────────────────────────────${RESET}"
 }
 
-# Display comments
-if [[ -z "$comments" ]]; then
-    echo "No comments found for this post."
-else
-    echo "$comments" | while IFS=$'\t' read -r author body score depth; do
-        print_comment "$depth"
-    done
-fi
+while true; do
+    # Display comments
+    if [[ -z "$comments" ]]; then
+        echo "No comments found for this post."
+    else
+        clear  # Clear screen for better readability
+        total_comments=$(echo "$comments" | wc -l)
+        echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
+        
+        echo "$comments" | while IFS=$'\t' read -r author body score depth; do
+            print_comment "$depth"
+        done
+    fi
 
+    echo -e "\nOptions:"
+    echo "m - Load more comments"
+    echo "r - Refresh current comments"
+    echo "q - Return to posts"
+    echo -n "Choose an option: "
+    read -r choice
 
-
-echo -e "\nPress 'm' to load more comments or Enter to return: "
-read -r more
-
-if [[ "$more" == "m" || "$more" == "M" ]]; then
-    comments=$(curl -s -H "Authorization: Bearer $access_token" \
-         -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-         "https://oauth.reddit.com/comments/$post_id?depth=10&limit=500&sort=top" | \
-         jq -r '
-         def walk_comments:
-           if type == "object" then
-             if .kind == "t1" and .data then
-               (.data | select(.author != null and .body != null) |
-               select(.body != "[removed]" and .body != "[deleted]") |
-               [.author, .body, .score, (.depth // 0)] | @tsv),
-               (.data.replies?.data?.children[]? | walk_comments)
-             elif .data?.children then
-               (.data.children[] | walk_comments)
-             else empty
-             end
-           else empty
-           end;
-         .[] | walk_comments')
-    
-    total_comments=$(echo "$comments" | wc -l)
-    echo -e "\n=== Comments ${RED_COLOR}(Showing $total_comments available comments)${RESET} ===\n"
-    
-    echo "$comments" | while IFS=$'\t' read -r author body score depth; do
-        print_comment "$depth"
-    done
-fi
+    case $choice in
+        m|M)
+            comments=$(curl -s -H "Authorization: Bearer $access_token" \
+                 -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+                 "https://oauth.reddit.com/comments/$post_id?depth=10&limit=500&sort=top" | \
+                 jq -r '
+                 def walk_comments:
+                   if type == "object" then
+                     if .kind == "t1" and .data then
+                       (.data | select(.author != null and .body != null) |
+                       select(.body != "[removed]" and .body != "[deleted]") |
+                       [.author, .body, .score, (.depth // 0)] | @tsv),
+                       (.data.replies?.data?.children[]? | walk_comments)
+                     elif .data?.children then
+                       (.data.children[] | walk_comments)
+                     else empty
+                     end
+                   else empty
+                   end;
+                 .[] | walk_comments')
+            ;;
+        r|R)
+            # Refresh current comments
+            comments=$(curl -s -H "Authorization: Bearer $access_token" \
+                 -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
+                 "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
+                 jq -r '
+                 def walk_comments:
+                   if type == "object" then
+                     if .kind == "t1" and .data then
+                       (.data | select(.author != null and .body != null) |
+                       select(.body != "[removed]" and .body != "[deleted]") |
+                       [.author, .body, .score, (.depth // 0)] | @tsv),
+                       (.data.replies?.data?.children[]? | walk_comments)
+                     elif .data?.children then
+                       (.data.children[] | walk_comments)
+                     else empty
+                     end
+                   else empty
+                   end;
+                 .[] | walk_comments')
+            ;;
+        q|Q)
+            clear
+            break
+            ;;
+        *)
+            echo "Invalid option!"
+            sleep 1
+            ;;
+    esac
+done
