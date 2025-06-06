@@ -16,7 +16,7 @@ RESET='\e[0m'
 # JQ Query for handling comments and replies
 comments=$(curl -s -H "Authorization: Bearer $access_token" \
      -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
-     "https://oauth.reddit.com/comments/$post_id?depth=10&limit=100&sort=top" | \
+     "https://oauth.reddit.com/comments/$post_id?depth=100&limit=100&sort=top" | \
      jq -r '
      def walk_comments:
        if type == "object" then

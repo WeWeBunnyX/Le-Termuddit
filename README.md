@@ -1,3 +1,5 @@
+![Termuddit Logo](logo.png)
+
 # Termuddit - Reddit CLI Client
 
 A command-line interface Reddit client written in Bash that lets you browse Reddit from your terminal with a clean, colorful interface.
