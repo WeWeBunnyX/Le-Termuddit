@@ -4,7 +4,10 @@
 
 A command-line interface Reddit client written in Bash that lets you browse Reddit from your terminal with a clean, colorful interface.
 
-![Termuddit Screenshot](screenshot.png)
+![Termuddit Screenshot](demonstrations/screenshot.png)
+![Termuddit Screenshot](demonstrations/demo4.png)
+![Termuddit Screenshot](demonstrations/demo2.png)
+![Termuddit Screenshot](demonstrations/demo5.png)
 
 ## Features
 
