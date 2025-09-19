@@ -14,7 +14,7 @@ fi
 
 access_token=$(cat access_token.txt)
 
-# When --noimage flag
+# When --noimg flag
 if [[ "$NO_IMAGES" == "true" ]]; then
     posts=$(curl -s -H "Authorization: Bearer $access_token" \
          -H "User-Agent: bash:termuddit:v1.0 (by /u/WeWeBunnyX)" \
