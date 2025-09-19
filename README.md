@@ -92,7 +92,7 @@ brew install jq curl figlet chafa
 
 1. Start the application:
 ```bash
-./termuddit.sh
+./termuddit.sh (use --noimg flag to omit chafa images)
 ```
 
 2. Enter a subreddit name when prompted (e.g., "linux", "programming")
