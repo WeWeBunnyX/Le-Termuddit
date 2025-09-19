@@ -73,7 +73,7 @@ while true; do
             print_comment "$depth"
         done
     fi
-
+    
     echo -e "\nOptions:"
     echo "m - Load more comments"
     echo "r - Refresh current comments"
