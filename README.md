@@ -80,7 +80,7 @@ brew install jq curl figlet chafa
    - Click "Create App" or "Create Another App"
    - ![Termuddit Screenshot](https://i.ibb.co/Kx1Ys3YJ/Screenshot-From-2025-09-21-11-44-08.png)
      
-   - Fill in the required information (name and description field can be anything you like, select script as the type and redirect uri as shown below)
+   - Fill in the required information and click 'create app' (name and description field can be anything you like, select script as the type and redirect uri as shown below)
      ![Termuddit Screenshot](https://i.ibb.co/0jWM59jg/Screenshot-From-2025-09-21-12-20-45.png)
 
    - Note your Client ID and Client Secret
