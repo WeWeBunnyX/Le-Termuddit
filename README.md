@@ -75,11 +75,17 @@ brew install jq curl figlet chafa
 ## Setup
 
 1. Create a Reddit App:
-   - Go to https://www.reddit.com/prefs/apps
+   - Go to [https://www.reddit.com/prefs/apps](https://www.reddit.com/prefs/apps)
+     
    - Click "Create App" or "Create Another App"
-   - Select "script"
-   - Fill in the required information
+   - ![Termuddit Screenshot](https://i.ibb.co/Kx1Ys3YJ/Screenshot-From-2025-09-21-11-44-08.png)
+     
+   - Fill in the required information (name and description field can be anything you like, select script as the type and redirect uri as shown below)
+     ![Termuddit Screenshot](https://i.ibb.co/0jWM59jg/Screenshot-From-2025-09-21-12-20-45.png)
+
    - Note your Client ID and Client Secret
+     ![Termuddit Screenshot](https://i.ibb.co/tPwTSKCq/Screenshot-From-2025-09-21-12-21-35.png)
+
 
 2. Run Termuddit:
 ```bash
@@ -87,17 +93,21 @@ brew install jq curl figlet chafa
 ```
 
 3. Enter your Reddit API credentials when prompted
+   ![Termuddit Screenshot](https://i.ibb.co/B5m9ry8L/Screenshot-From-2025-09-21-14-18-42.png)
+
 
 ## Usage
 
-1. Start the application:
+**1**. Start the application:
 ```bash
 ./termuddit.sh --noimg
 ```
 
-2. Enter a subreddit name when prompted (e.g., "linux", "programming")
+Or just use ```./termuddit.sh``` to render images along with the post (without --noimg flag). The images are converted to ASCII art and may not be in full quality/resolution due to terminal limitations
 
-3. Choose number of posts to fetch
+**2**. Enter a subreddit name when prompted (e.g., "linux", "programming")
+
+**3**. Choose number of posts to fetch
 
 ### Navigation
 
@@ -111,7 +121,7 @@ brew install jq curl figlet chafa
 - `r` - Refresh current comments
 - `q` - Return to posts view
 
-### Image Display
+### Image Display (use ```-noimg``` flag to disable)
 
 Images in posts are automatically converted to ASCII art using `chafa`. The quality depends on:
 - Terminal color support (256 colors recommended)
