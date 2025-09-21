@@ -33,8 +33,8 @@ A command-line interface Reddit client written in Bash that lets you browse Redd
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/WeWeBunnyX/termuddit.git
-cd termuddit
+git clone https://github.com/WeWeBunnyX/Le-Termuddit.git
+cd Le-Termuddit
 ```
 
 2. Make scripts executable:
@@ -92,7 +92,7 @@ brew install jq curl figlet chafa
 
 1. Start the application:
 ```bash
-./termuddit.sh (use --noimg flag to omit chafa images)
+./termuddit.sh --noimg
 ```
 
 2. Enter a subreddit name when prompted (e.g., "linux", "programming")
